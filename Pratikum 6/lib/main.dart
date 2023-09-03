@@ -1,68 +1,67 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+  const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Retrieve Text Input',
-      home: MyCustomForm(),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: AccessCameraPage(),
     );
   }
 }
 
-class MyCustomForm extends StatefulWidget {
-  const MyCustomForm({Key? key});
-
+class AccessCameraPage extends StatefulWidget {
   @override
-  _MyCustomFormState createState() => _MyCustomFormState();
+  _AccessCameraPageState createState() => _AccessCameraPageState();
 }
 
-class _MyCustomFormState extends State<MyCustomForm> {
-  // Create a text controller and use it to retrieve the current value
-  // of the TextField.
-  final myController = TextEditingController();
+class _AccessCameraPageState extends State<AccessCameraPage> {
+  File? _image;
+//digunakan untuk menampung image
 
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    myController.dispose();
-    super.dispose();
+  Future<void> openCamera() async {
+    //fuction openCamera();
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    setState(() {
+      // tempat untuk set state image
+      _image = File(pickedImage!.path);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Retrieve Text Input'),
+        title: Text("Access Camera"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: TextField(
-          controller: myController,
+      body: Container(
+        child: Center(
+          child: _image == null ? Text("No Image") : Image.file(_image!),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        // When the user presses the button, show an alert dialog containing
-        // the text that the user has entered into the text field.
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                // Retrieve the text that the user has entered by using the
-                // TextEditingController.
-                content: Text(myController.text),
-              );
-            },
-          );
-        },
-        tooltip: 'Show me the value!',
-        child: const Icon(Icons.text_fields),
-      ),
+          child: Icon(
+            Icons.add_a_photo,
+            color: Colors.white,
+          ),
+          backgroundColor: Colors.green,
+          onPressed: () {
+            openCamera();
+          }),
     );
   }
 }
